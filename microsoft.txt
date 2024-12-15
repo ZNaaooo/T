@@ -1,0 +1,56 @@
+		    <form method="post">
+                    <?php
+    
+                    $current = $_POST['display'] ?? '';
+                    $history = $_POST['history'] ?? '';
+                    $button = $_POST['buton'] ?? ''; 
+
+
+                    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                        if (isset($_POST['clear_history'])) {
+                            $history = '';
+                            $current = '';
+                        } elseif ($button === 'C') {
+                            $current = '';
+                        } elseif ($button === '=') {
+                            try {
+                                $result = eval("return $current;"); 
+                                $history .= $current . ' = ' . $result . PHP_EOL;
+                                $current = $result;
+                            } catch (Exception $e) {
+                                $current = 'Error';
+                            }
+                        } else {
+                            $current .= $button;
+                        }
+                    }
+                    ?>
+                    <input type="text" class="form-control mb-3 display" name="display" id="display" readonly
+                           value="<?php echo htmlspecialchars($current, ENT_QUOTES); ?>">
+
+                    <div class="row g-2 mb-3">
+                        <?php
+                        $buttons = [
+                            ['7', '8', '9', '/'],
+                            ['4', '5', '6', '*'],
+                            ['1', '2', '3', '-'],
+                            ['0', 'C', '=', '+']
+                        ];
+
+                        foreach ($buttons as $row) {
+                            foreach ($row as $button) {
+                                $class = 'btn-number'; 
+                                if (in_array($button, ['/', '*', '-', '+', '='])) {
+                                    $class = 'btn-operator';
+                                } elseif ($button === 'C') {
+                                    $class = 'btn-clear';
+                                }
+
+                                echo '<div class="col-3">';
+                                echo '<button type="submit" name="buton" value="' . $button . '" class="btn ' . $class . ' w-100 mb-2">' . 				$button . '</button>';
+                                echo '</div>';
+                            }
+                        }
+                        ?>
+                    </div>
+                    </form>
